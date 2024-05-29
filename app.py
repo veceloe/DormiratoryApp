@@ -24,7 +24,6 @@ user_profile = {
 }
 
 IMAGES_FOLDER = os.path.join('static', 'images')
-os.makedirs(IMAGES_FOLDER, exist_ok=True)
 
 ADVERTS_CSV = 'adverts.csv'
 
