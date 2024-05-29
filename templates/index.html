@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прачечная - общажка.рф</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.7.0/dist/htmx.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #333;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            z-index: 1000!important;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ffffff;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .sidebar-toggle.open {
+            display: block;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo span {
+            font-family: 'Jost', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+        }
+
+        .menu-item {
+            font-size: 1.2rem;
+            padding: 10px 0;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .menu-item:hover {
+            color: #007bff;
+        }
+
+        .main-content {
+            margin-left: 270px; /* С учетом ширины бокового меню */
+            padding: 20px;
+        }
+
+        .machine-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 200px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+        }
+
+        .machine-card {
+            background: #ffffff;
+            box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
+            border-radius: 20px;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .machine-circle {
+            background: #ffffff;
+            box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .machine-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-weight: bold;
+        }
+
+        .machine-status {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: #ffffff;
+            box-shadow: 6px 6px 16px #d9d9d9, -6px -6px 16px #ffffff;
+            border-radius: 12px;
+            padding: 10px 20px;
+            transition: background 0.2s;
+            cursor: pointer;
+            margin: 10px 0;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .btn:hover {
+            background: #f0f0f0;
+        }
+
+        .btn:active {
+            background: #e0e0e0;
+        }
+
+        .queue {
+            display: none;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            box-shadow: 6px 6px 16px #d9d9d9, -6px -6px 16px #ffffff;
+            border-radius: 12px;
+            z-index: 10;
+        }
+
+        .btn:hover .queue {
+            display: block;
+        }
+
+        .queue li {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .queue li:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .sidebar.open {
+                display: flex;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="static/logo.svg" alt="Лого">
+            <span>общажка.рф</span>
+        </div>
+        <a href="{{ url_for('profile') }}"><div class="menu-item">Профиль</div></a>
+        <a href="{{ url_for('index') }}"><div class="menu-item">Прачечная</div></a>
+        <a href="{{ url_for('market') }}"><div class="menu-item">Рынок</div></a>
+    </div>
+    <div class="main-content flex items-center justify-center min-h-screen">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center flex-wrap">
+                {% for machine in machines %}
+                    <div class="machine-wrapper" id="machine-{{ machine.id }}">
+                        <div class="machine-card">
+                            <div class="machine-number">№{{ machine.id }}</div>
+                            <div class="machine-circle">
+                                <div class="machine-status {{ 'text-green-500' if machine.status == 'Available' else 'text-red-500' }}">
+                                    {{ '0' if machine.status == 'Available' else machine.time_remaining }}
+                                </div>
+                            </div>
+                            <form method="post" action="{{ url_for('join_queue', machine_id=machine.id) if user not in machine.queue else url_for('leave_queue', machine_id=machine.id) }}">
+                                <button class="btn" type="submit">
+                                    {{ 'Выйти из очереди' if user in machine.queue else 'В очередь' }}
+                                    <ul class="queue">
+                                        {% for u in machine.queue %}
+                                            <li>{{ u }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
