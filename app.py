@@ -18,8 +18,8 @@ user_profile = {
     "floor": "3",
     "room": "305",
     "block": "A",
-    "hobbies": "Чтение, спорт",
-    "about": "Студент МГУ",
+    "hobbies": "",
+    "about": "",
     "photo": None
 }
 
@@ -56,7 +56,6 @@ def profile():
         user_profile['block'] = request.form['block']
         user_profile['hobbies'] = request.form['hobbies']
         user_profile['about'] = request.form['about']
-        # Здесь можно добавить логику для загрузки и сохранения фотографии
         return redirect(url_for('profile'))
 
     return render_template('profile.html', user=session['user'], profile=user_profile)
@@ -88,11 +87,9 @@ def create_advert():
         block = user_profile['block']
         room = user_profile['room']
 
-        # Сохранение изображения
         image_path = os.path.join(IMAGES_FOLDER, image.filename)
         image.save(image_path)
 
-        # Сохранение данных в CSV
         df = pd.read_csv(ADVERTS_CSV)
         new_advert = pd.DataFrame([{'title': title, 'date': date, 'username': username, 'image': image_path,
                                     'price': price, 'type': type, 'block': block, 'room': room}])
