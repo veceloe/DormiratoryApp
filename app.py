@@ -6,7 +6,6 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
-# Данные о стиральных машинах
 machines = [
     {"id": 1, "status": "Available", "time_remaining": 0, "queue": []},
     {"id": 2, "status": "Busy", "time_remaining": 30, "queue": []},
@@ -15,24 +14,20 @@ machines = [
     {"id": 5, "status": "Available", "time_remaining": 0, "queue": []},
 ]
 
-# Пример данных профиля пользователя
 user_profile = {
     "floor": "3",
     "room": "305",
     "block": "A",
     "hobbies": "Чтение, спорт",
     "about": "Студент МГУ",
-    "photo": None  # URL или путь к фотографии
+    "photo": None
 }
 
-# Путь к папке для сохранения изображений
 IMAGES_FOLDER = os.path.join('static', 'images')
 os.makedirs(IMAGES_FOLDER, exist_ok=True)
 
-# Путь к CSV-файлу для хранения объявлений
 ADVERTS_CSV = 'adverts.csv'
 
-# Создание CSV-файла, если он не существует
 if not os.path.exists(ADVERTS_CSV):
     df = pd.DataFrame(columns=['title', 'date', 'username', 'image', 'price', 'type', 'block', 'room'])
     df.to_csv(ADVERTS_CSV, index=False)
